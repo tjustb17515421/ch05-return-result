@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mou.dao.StudentDao">
+
+    <select id="selectStudentById" parameterType="java.lang.Integer" resultType="com.mou.domain.Student">
+        select id,name,email,age from Student where id=#{id}
+    </select>
+
+
+    <select id="selectStudentMuliParam" resultType="Student">
+        select id,name,email,age from Student where name=#{myname} or age=#{myage}
+    </select>
+
+    <select id="selectStudentReturnViewStudent" resultType="vstu"><!--vstu是自定义的别名-->
+        select id,name from Student where id=#{sid}
+    </select>
+
+    <!--sql执行后返回一行一列-->
+    <select id="countStudent" resultType="int">
+        select count(*) from Student
+    </select>
+
+    <!--返回的是map-->
+    <select id="selectByMap" resultType="java.util.HashMap">
+        select id,name,email from Student where id=#{id}
+    </select>
+
+    <!--
+        使用resultMap的步骤：1.先定义，然后在resultMap的select标签中来引用定义
+
+        定义resultMap中：
+                id:自定义名称，表示你定义的resultMap的名字
+                type：Java类型的全限定名称
+    -->
+    <resultMap id="studentMap" type="com.mou.domain.Student">
+        <!-- column:列名
+            property：类的属性名
+        -->
+
+        <!--主键列：使用标签id-->
+        <id column="id" property="id"/>
+
+        <!--非主键列：使用标签result-->
+        <result column="name" property="name"/>
+        <result column="email" property="email"/>
+        <result column="age" property="age"/>
+    </resultMap>
+
+    <select id="selectAllStudents" resultMap="studentMap">
+        select id,name,email,age from Student
+    </select>
+
+
+    <!--展示resultMap     方法1   当数据库列名和返回对象的属性名不一致时的result方法 -->
+    <resultMap id="mystudentMap" type="com.mou.domain.MyStudent">
+        <!--主键列：使用标签id-->
+        <id column="id" property="stuid"/>
+        <!--非主键列：使用标签result-->
+        <result column="name" property="stuname"/>
+        <result column="email" property="stuemail"/>
+        <result column="age" property="stuage"/>
+    </resultMap>
+
+    <select id="selectAllStudents2" resultMap="mystudentMap">
+        select id,name,email,age from Student
+    </select>
+
+    <!--展示resultMap     方法2   当数据库列名和返回对象的属性名不一致时的result方法
+                                使用sql语句中给列起别名的方式可以实现,别名就是Java对象中的属性名
+    -->
+    <select id="selectDiffCoilProperty" resultType="com.mou.domain.MyStudent">
+        select id as stuid,name as stuname,email as stuemail,age as stuage from Student
+    </select>
+
+
+    <!--第一种 like, Java代码指定like内容 (推荐使用)-->
+    <select id="selectlikeOne" resultType="com.mou.domain.Student">
+        select id,name,email,age from Student where name like #{name}
+    </select>
+
+    <!--第二种方式 在sql语句中拼接like的内容-->
+    <select id="selectlikeTwo" resultType="com.mou.domain.Student">
+        select id,name,email,age from Student where name like  "%" #{name} "%"
+    </select>
+</mapper>
